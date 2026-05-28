@@ -1,3 +1,7 @@
+# Explore an enterprise-grade Avalara Tax integration pattern for B2B Commerce not dependent on packages.
+
+This repository supports a B2B Commerce Implementation Readiness activity. For the complete activity guide, see: [link](https://sfdc.co)
+
 # Salesforce DX Project: Next Steps
 
 Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
