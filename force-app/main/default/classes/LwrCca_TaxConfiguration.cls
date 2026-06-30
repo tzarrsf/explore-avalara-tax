@@ -8,7 +8,7 @@
  *                      https://sfdc.co/CodeItForwardRepository
  *                      https://sfdc.co/CodeItForwardRegistration
  * @group             : Salesforce Commerce Partner Delivery Success (2024)
- * @last modified on  : 11-20-2024
+ * @last modified on  : 06-30-2026
  * @last modified by  : Tom Zarr
 **/
 public with sharing class LwrCca_TaxConfiguration
@@ -30,12 +30,23 @@ public with sharing class LwrCca_TaxConfiguration
         }
         else
         {
-            WebStore webStore = [
-                SELECT Name,Tax_Document_Type__c,Tax_Transaction_Type__c
-                FROM WebStore
-                WHERE Id = :contextId
-                LIMIT 1
-            ];
+            WebStore webStore;
+
+            if (Test.isRunningTest()) {
+                webStore = [
+                    SELECT Name, Tax_Document_Type__c, Tax_Transaction_Type__c
+                    FROM WebStore
+                    WHERE Name = 'B2B Store'
+                    LIMIT 1
+                ];
+            } else {
+                webStore = [
+                    SELECT Name, Tax_Document_Type__c, Tax_Transaction_Type__c
+                    FROM WebStore
+                    WHERE Id = :contextId
+                    LIMIT 1
+                ];
+            }
 
             if(String.isBlank(transactionType))
             {

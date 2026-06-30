@@ -6,21 +6,21 @@
  *                      https://sfdc.co/CodeItForwardRepository
  *                      https://sfdc.co/CodeItForwardRegistration
  * @group             : Salesforce Commerce Partner Delivery Success (2024)
- * @last modified on  : 07-26-2024
+ * @last modified on  : 06-30-2026
  * @last modified by  : Tom Zarr
 **/
-global class LwrCca_CartOrchExtensionCustom extends CartExtension.CartCalculate {
+global class LwrCca_CartOrchExtensionTaxAvalara extends CartExtension.CartCalculate {
     /**
      * @description All classes extending CartExtension.CartCalculate must have a default constructor defined
      */
     // TODO: Compare this to the LwrCca_CartOrchestrator class and consolidate
-    global LwrCca_CartOrchExtensionCustom() {}
+    global LwrCca_CartOrchExtensionTaxAvalara() {}
   
     /**
      * @description Constructor used by unit tests only. See <<CartCalculationOrchestratorExtensionUnitTest>>.
      * @param apexExecutor Executor which executes various calculators. Can be used to stub calculation results or delegate calculations to actual Calculator. See <<CartCalculateExecutorMock>>.
      */
-    global LwrCca_CartOrchExtensionCustom(final CartExtension.CartCalculateExecutorMock apexExecutor) {
+    global LwrCca_CartOrchExtensionTaxAvalara(final CartExtension.CartCalculateExecutorMock apexExecutor) {
       // Must call super constructor in order for provided Executor to be used for calculations
       super(apexExecutor);
     }

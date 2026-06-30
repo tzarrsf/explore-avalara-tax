@@ -6,7 +6,7 @@
  *                      https://sfdc.co/CodeItForwardRepository
  *                      https://sfdc.co/CodeItForwardRegistration
  * @group             : Salesforce Commerce Partner Delivery Success (2024)
- * @last modified on  : 11-20-2024
+ * @last modified on  : 06-30-2026
  * @last modified by  : Tom Zarr
 **/
 public without sharing class LwrCca_TaxCartCalculatorExtension extends CartExtension.TaxCartCalculator
@@ -41,13 +41,21 @@ public without sharing class LwrCca_TaxCartCalculatorExtension extends CartExten
            }
       }
     } catch (Exception e) {
-      // For testing purposes, this example treats exceptions as user errors, which means they are
+        System.debug(LoggingLevel.ERROR, e.getStackTraceString());
+        throw new CalloutException('There was a problem with the request. Original error: ' + e.getMessage());
+    }
+
+    /*
+    catch (Exception e) {
+      // Use this version of the catch block to treat exceptions as user errors, which means they are
       // displayed to the buyer user. In production, you probably want exceptions to be admin-type
       // errors. In that case, throw the exception here and make sure that a notification system is
       // in place to let the admin know that the error occurred. See the README section about error
       // handling for details about how to create that notification.
-      throw new CalloutException('There was a problem with the request.');
+       throw new CalloutException('There was a problem with the request. Original error: ' + e.getMessage());
     }
+    */
+
     return;
   }
 

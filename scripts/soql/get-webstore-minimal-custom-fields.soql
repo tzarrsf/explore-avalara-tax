@@ -1,0 +1,2 @@
+SELECT Id, Name, Description, Tax_Document_Type__c, Tax_Transaction_Type__c
+FROM WebStore WHERE Name = 'B2B Store'

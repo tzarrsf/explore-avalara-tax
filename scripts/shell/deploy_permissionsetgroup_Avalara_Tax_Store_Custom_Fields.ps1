@@ -1,0 +1,1 @@
+sf project deploy start -m "PermissionSetGroup:Avalara_Tax_Store_Custom_Fields_PSG"

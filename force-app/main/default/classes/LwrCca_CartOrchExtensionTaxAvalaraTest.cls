@@ -6,11 +6,11 @@
  *                      https://sfdc.co/CodeItForwardRepository
  *                      https://sfdc.co/CodeItForwardRegistration
  * @group             : Salesforce Commerce Partner Delivery Success (2024)
- * @last modified on  : 11-20-2024
+ * @last modified on  : 06-30-2026
  * @last modified by  : Tom Zarr
 **/
 @isTest
-global with sharing class LwrCca_CartOrchExtensionCustomTest
+global with sharing class LwrCca_CartOrchExtensionTaxAvalaraTest
 {
     // TODO: Compare this with the LwrCca_CartOrchestrator class and consolidate
 
@@ -22,7 +22,7 @@ global with sharing class LwrCca_CartOrchExtensionCustomTest
     private static final String POST_SHIPPING_COMPLETED = 'PostShippingCompleted';
 
     static CartCalculateExecutorForUnitTest executor = new CartCalculateExecutorForUnitTest();
-    static LwrCca_CartOrchExtensionCustom cartCalculateSample = new LwrCca_CartOrchExtensionCustom(
+    static LwrCca_CartOrchExtensionTaxAvalara cartCalculateSample = new LwrCca_CartOrchExtensionTaxAvalara(
         executor
     );
         @isTest
@@ -41,7 +41,7 @@ global with sharing class LwrCca_CartOrchExtensionCustomTest
         boolean runPostShipping =byrAction.isDeliveryGroupChanged() ||byrAction.isDeliveryMethodSelected();
         boolean runTaxes = byrAction.isDeliveryGroupChanged() ||byrAction.isDeliveryMethodSelected();  
         Test.startTest();
-        LwrCca_CartOrchExtensionCustom extension  = new LwrCca_CartOrchExtensionCustom();
+        LwrCca_CartOrchExtensionTaxAvalara extension  = new LwrCca_CartOrchExtensionTaxAvalara();
         extension.calculate(request);
         Test.stopTest();
         }
@@ -88,7 +88,7 @@ global with sharing class LwrCca_CartOrchExtensionCustomTest
     }
 
     @IsTest
-    public static void shouldRunPricingAndPromotionsWhenBuyerRemovesItemToCart() {
+    public static void shouldRunPricingAndPromotionsWhenBuyerRemovesItemFromCart() {
         // Arrange Cart
         CartExtension.Cart cart = arrangeCart();
 

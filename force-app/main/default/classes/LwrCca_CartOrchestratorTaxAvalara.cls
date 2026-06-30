@@ -13,21 +13,21 @@
  *
  * @author            : Tom Zarr
  * @group             : Salesforce Commerce Partner Delivery Success (2024)
- * @last modified on  : 03-27-2024
+ * @last modified on  : 06-30-2026
  * @last modified by  : Tom Zarr
 **/
-global class LwrCca_CartOrchestrator extends CartExtension.CartCalculate
+global class LwrCca_CartOrchestratorTaxAvalara extends CartExtension.CartCalculate
 {
     /**
      * @description All classes extending CartExtension.CartCalculate must have a default constructor defined
      */
-    global LwrCca_CartOrchestrator() { }
+    global LwrCca_CartOrchestratorTaxAvalara() { }
 
     /**
      * @description Constructor used by unit tests only. See <<CartCalculateSampleUnitTest>>.
      * @param apexExecutor Executor which executes various calculators. Can be used to stub calculation results or delegate calculations to actual Calculator. See <<CartCalculateExecutorMock>>.
      */
-    global LwrCca_CartOrchestrator(final CartExtension.CartCalculateExecutorMock apexExecutor)
+    global LwrCca_CartOrchestratorTaxAvalara(final CartExtension.CartCalculateExecutorMock apexExecutor)
     {
         // Must call super constructor in order for provided Executor to be used for calculations
         super(apexExecutor);
@@ -36,7 +36,7 @@ global class LwrCca_CartOrchestrator extends CartExtension.CartCalculate
     // Each orchestrator must override this calculate method.
     global virtual override void calculate(CartExtension.CartCalculateOrchestratorRequest request)
     {
-        System.debug('## LwrCca_CartOrchestrator.calculate(CartExtension.CartCalculateOrchestratorRequest request)');
+        System.debug('### LwrCca_CartOrchestratorTaxAvalara.calculate(CartExtension.CartCalculateOrchestratorRequest request)');
         CartExtension.Cart cart = request.getCart();
 
         // Use BuyerActions to decide which calculators to invoke
@@ -53,7 +53,7 @@ global class LwrCca_CartOrchestrator extends CartExtension.CartCalculate
         CartExtension.CartCalculateCalculatorRequest calculatorRequest = new CartExtension.CartCalculateCalculatorRequest(cart, request.getOptionalBuyerActionDetails());
 
         if (runPricing) {
-            System.debug('## runPricing was true. Calling prices(calculatorRequest)...');
+            System.debug('### runPricing was true. Calling prices(calculatorRequest)...');
             prices(calculatorRequest);
 
             if (hasErrorLevelCartValidationOutput(cart.getCartValidationOutputs(), CartExtension.CartValidationOutputTypeEnum.PRICING)) {
@@ -65,18 +65,16 @@ global class LwrCca_CartOrchestrator extends CartExtension.CartCalculate
          * Work in Progress - not used at the moment
          */
         if (runPromotions) {
-            /*
-            System.debug('## runPromotions was true. Calling promotions(calculatorRequest)...');
+            System.debug('### runPromotions was true. Calling promotions(calculatorRequest)...');
             promotions(calculatorRequest);
 
             if (hasErrorLevelCartValidationOutput(cart.getCartValidationOutputs(), CartExtension.CartValidationOutputTypeEnum.PROMOTIONS)) {
                 return;
             }
-            */
         }
 
         if (runInventory) {
-            System.debug('## runInventory was true. Calling inventory(calculatorRequest)...');
+            System.debug('### runInventory was true. Calling inventory(calculatorRequest)...');
             inventory(calculatorRequest);
 
             if (hasErrorLevelCartValidationOutput(cart.getCartValidationOutputs(), CartExtension.CartValidationOutputTypeEnum.INVENTORY)) {
@@ -88,7 +86,7 @@ global class LwrCca_CartOrchestrator extends CartExtension.CartCalculate
          * This code must run even if using the native shipping feature
          */
         if (runShipping) {
-            System.debug('## runShipping was true. Calling shipping(calculatorRequest)...');
+            System.debug('### runShipping was true. Calling shipping(calculatorRequest)...');
             shipping(calculatorRequest);
 
             if (hasErrorLevelCartValidationOutput(cart.getCartValidationOutputs(), CartExtension.CartValidationOutputTypeEnum.SHIPPING)) {
@@ -100,7 +98,7 @@ global class LwrCca_CartOrchestrator extends CartExtension.CartCalculate
          * This code must run even if using the native shipping feature
          */
         if (runPostShipping) {
-            System.debug('## runPostShipping was true. Calling postShipping(calculatorRequest)...');
+            System.debug('### runPostShipping was true. Calling postShipping(calculatorRequest)...');
             postShipping(calculatorRequest);
 
             if (hasErrorLevelCartValidationOutput(cart.getCartValidationOutputs(), CartExtension.CartValidationOutputTypeEnum.SYSTEM_ERROR)) {
@@ -112,7 +110,7 @@ global class LwrCca_CartOrchestrator extends CartExtension.CartCalculate
          * Call taxes
          */
         if (runTaxes) {
-            System.debug('## runTaxes was true. Calling taxes(calculatorRequest)...');
+            System.debug('### runTaxes was true. Calling taxes(calculatorRequest)...');
             taxes(calculatorRequest);
         }
     }

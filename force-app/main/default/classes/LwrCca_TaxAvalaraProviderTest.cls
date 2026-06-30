@@ -1,12 +1,8 @@
 /**
- * @description       : Unit tests for the LwrCca_TaxAvalaraProvider class.
- * @author            : Code-It-Forward team members (main contributors) and Tom Zarr (content adaptation and editing for course)
- *                      To find out more about Code-It-Forward please consult these links:
- *                      https://sfdc.co/CodeItForwardCharter
- *                      https://sfdc.co/CodeItForwardRepository
- *                      https://sfdc.co/CodeItForwardRegistration
- * @group             : Salesforce Commerce Partner Delivery Success (2024)
- * @last modified on  : 11-20-2024
+ * @description       : 
+ * @author            : Tom Zarr
+ * @group             : 
+ * @last modified on  : 06-30-2026
  * @last modified by  : Tom Zarr
 **/
 @isTest
@@ -15,12 +11,14 @@ public class LwrCca_TaxAvalaraProviderTest
     @testSetup
     static void setup()
     {
-        Account account = new Account(Name='R1Training');
+        Account account = new Account(Name='B2B Store');
         insert account;
         WebStore webStore = new WebStore(
-            Name = 'R1Training',
-            Tax_Document_Type__c ='INVOICE',
-            Tax_Transaction_Type__c ='SALE'
+            Name = 'B2B Store',
+            //Tax_Document_Type__c ='INVOICE',
+            Tax_Document_Type__c ='SalesOrder',
+            //Tax_Transaction_Type__c ='SALE'
+            Tax_Transaction_Type__c ='CreateTransaction'
         );
         insert webStore;
         WebCart cart = new WebCart(Name='Cart', WebStoreId=webStore.Id, AccountId=account.Id);
@@ -92,7 +90,7 @@ public class LwrCca_TaxAvalaraProviderTest
     }
 
     private static LwrCca_TaxProviderRequest taxProviderRequest(){
-        WebStore store =[SELECT Id FROM WebStore WHERE Name = 'R1Training' LIMIT 1];
+        WebStore store =[SELECT Id FROM WebStore WHERE Name = 'B2B Store' LIMIT 1];
         WebCart webCart = [SELECT Id FROM WebCart WHERE Name = 'Cart' LIMIT 1];
         CartItem webCartItem = [SELECT Id FROM CartItem WHERE CartId=:webCart.Id LIMIT 1];
 

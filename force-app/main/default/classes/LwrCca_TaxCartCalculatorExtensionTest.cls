@@ -6,7 +6,7 @@
  *                      https://sfdc.co/CodeItForwardRepository
  *                      https://sfdc.co/CodeItForwardRegistration
  * @group             : Salesforce Commerce Partner Delivery Success (2024)
- * @last modified on  : 11-20-2024
+ * @last modified on  : 06-30-2026
  * @last modified by  : Tom Zarr
 **/
 @IsTest
@@ -16,7 +16,8 @@ public class LwrCca_TaxCartCalculatorExtensionTest
     {
         Account account = new Account(Name='TestAccount');
         insert account;
-        WebStore webStore = new WebStore(Name='R1Training', SupportedLanguages='en_US', DefaultLanguage='en_US',  Tax_Document_Type__c ='INVOICE',Tax_Transaction_Type__c ='SALE');
+        // WebStore webStore = new WebStore(Name='B2B Store', SupportedLanguages='en_US', DefaultLanguage='en_US',  Tax_Document_Type__c ='INVOICE',Tax_Transaction_Type__c ='SALE');
+        WebStore webStore = new WebStore(Name='B2B Store', SupportedLanguages='en_US', DefaultLanguage='en_US',  Tax_Document_Type__c ='SalesOrder',Tax_Transaction_Type__c ='CreateTransaction');
         insert webStore;
         WebCart cart = new WebCart(Name='Cart', WebStoreId=webStore.Id, AccountId=account.Id);
         insert cart;
@@ -37,7 +38,7 @@ public class LwrCca_TaxCartCalculatorExtensionTest
     static void testCalculate()
     {
         CartExtension.Cart cart = arrangeCart();
-        String name = 'R1Training';
+        String name = 'B2B Store';
         Tax_Provider__mdt taxProvider = getCustomMetadataRecord(name);
         CartExtension.BuyerActionsMock buyerActions = getBuyerActionsForDeleteFromCart(cart);
         CartExtension.BuyerActionDetails buyerActionDetails = getBuyerActionDetailsForQuantityIncrease(cart.getCartItems().get(0));
@@ -77,7 +78,7 @@ public class LwrCca_TaxCartCalculatorExtensionTest
     {
         Account testAccount = new Account(Name='My Account');
         insert testAccount;
-        WebStore testWebStore = new WebStore(Name='R1Training',Tax_Document_Type__c ='INVOICE', Tax_Transaction_Type__c ='SALE');
+        WebStore testWebStore = new WebStore(Name='B2B Store',Tax_Document_Type__c ='INVOICE', Tax_Transaction_Type__c ='SALE');
         insert testWebStore;
         WebCart testCart = new WebCart(Name='My Cart', WebStoreId=testWebStore.Id, AccountId=testAccount.Id);
         insert testCart;
@@ -183,7 +184,7 @@ public class LwrCca_TaxCartCalculatorExtensionTest
     {
          Tax_Provider__mdt testTaxProvider = new Tax_Provider__mdt(
             Context_Name__c = myName,
-            Context_Locale__c = 'en_GB',
+            Context_Locale__c = 'en_US',
             Taxation_Policy__c = 'Standard',
             Customer_Code__c = 'Cust123',
             Company_Code__c = 'Comp456',

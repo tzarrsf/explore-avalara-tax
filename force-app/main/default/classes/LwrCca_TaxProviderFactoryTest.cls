@@ -1,12 +1,8 @@
 /**
- * @description       : This code... [Fill in the rest!]
- * @author            : Code-It-Forward team members (main contributors) and Tom Zarr (content adaptation and editing for course)
- *                      To find out more about Code-It-Forward please consult these links:
- *                      https://sfdc.co/CodeItForwardCharter
- *                      https://sfdc.co/CodeItForwardRepository
- *                      https://sfdc.co/CodeItForwardRegistration
- * @group             : Salesforce Commerce Partner Delivery Success (2024)
- * @last modified on  : 11-20-2024
+ * @description       : 
+ * @author            : Tom Zarr
+ * @group             : 
+ * @last modified on  : 06-30-2026
  * @last modified by  : Tom Zarr
 **/
 @isTest
@@ -21,9 +17,11 @@ public class LwrCca_TaxProviderFactoryTest
     static void setup()
     {
         WebStore webStore = new WebStore(
-            Name = 'R1Training',
-            Tax_Document_Type__c ='INVOICE',
-            Tax_Transaction_Type__c ='SALE'
+            Name = 'B2B Store',
+            //Tax_Document_Type__c ='INVOICE',
+            Tax_Document_Type__c ='SalesOrder',
+            //Tax_Transaction_Type__c ='SALE'
+            Tax_Transaction_Type__c ='CreateTransaction'
         );
         insert webStore;
     }
@@ -31,8 +29,8 @@ public class LwrCca_TaxProviderFactoryTest
     @isTest
     static void testgetTaxProvider()
     {
-        WebStore webStore = [SELECT Id FROM WebStore WHERE Name = 'R1Training' LIMIT 1];
-        String name = 'R1Training';
+        WebStore webStore = [SELECT Id FROM WebStore WHERE Name = 'B2B Store' LIMIT 1];
+        String name = 'B2B Store';
         String className = 'TestImplClass';
         Tax_Provider__mdt taxMeta = getCustomMetadataRecord(name,className);
         Test.startTest();
@@ -47,7 +45,7 @@ public class LwrCca_TaxProviderFactoryTest
     {
         Tax_Provider__mdt testTaxProvider = new Tax_Provider__mdt(
             Context_Name__c = myName,
-            Context_Locale__c = 'en_GB',
+            Context_Locale__c = 'en_US',
             Taxation_Policy__c = 'Standard',
             Customer_Code__c = 'Cust123',
             Company_Code__c = 'Comp456',
@@ -57,8 +55,8 @@ public class LwrCca_TaxProviderFactoryTest
             Consider_product_tax_codes__c = true,
             Product_Tax_Exemption__c = false,
             Customer_Tax_Exemption__c = true,
-            Document_Type__c = 'INVOICE',
-            Transaction_Type__c = 'SALE',
+            Document_Type__c = 'SalesOrder',
+            Transaction_Type__c = 'CreateTransaction',
             Commit__c = true,
             Address_Line1__c = '123 Test St',
             Address_Line2__c = 'Suite 100',

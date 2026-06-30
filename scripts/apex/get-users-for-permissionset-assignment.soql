@@ -1,0 +1,11 @@
+SELECT
+    Assignee.Id,
+    Assignee.Name,
+    PermissionSet.Label
+FROM PermissionSetAssignment
+WHERE PermissionSet.Label IN (
+    'B2B Buyer',
+    'B2B Enhanced Buyer',
+    'Buyer Manager'
+)
+ORDER BY PermissionSet.Label, Assignee.Name

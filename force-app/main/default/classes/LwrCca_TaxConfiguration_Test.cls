@@ -6,7 +6,7 @@
  *                      https://sfdc.co/CodeItForwardRepository
  *                      https://sfdc.co/CodeItForwardRegistration
  * @group             : Salesforce Commerce Partner Delivery Success (2024)
- * @last modified on  : 12-14-2024
+ * @last modified on  : 06-30-2026
  * @last modified by  : Tom Zarr
 **/
 @IsTest
@@ -16,9 +16,11 @@ public class LwrCca_TaxConfiguration_Test
     static void setup()
     {
         WebStore webStore = new WebStore(
-            Name = 'R1Training',
-            Tax_Document_Type__c ='INVOICE',
-            Tax_Transaction_Type__c ='SALE'
+            Name = 'B2B Store',
+            //Tax_Document_Type__c ='INVOICE',
+            Tax_Document_Type__c ='SalesOrder',
+            //Tax_Transaction_Type__c ='SALE'
+            Tax_Transaction_Type__c ='CreateTransaction'
         );
         insert webStore;
     }
@@ -26,8 +28,8 @@ public class LwrCca_TaxConfiguration_Test
     @isTest
     static void testgetMetaDataDTO()
     {
-        WebStore webStore = [SELECT Id FROM WebStore WHERE Name = 'R1Training' LIMIT 1];
-        String name = 'R1Training';
+        WebStore webStore = [SELECT Id FROM WebStore WHERE Name = 'B2B Store' LIMIT 1];
+        String name = 'B2B Store';
         Tax_Provider__mdt taxMeta = getCustomMetadataRecord(name);
         Test.startTest();
         LwrCca_TaxMetaData result = LwrCca_TaxConfiguration.getMetaDataDTO(webStore.Id, null, null);
@@ -49,7 +51,7 @@ public class LwrCca_TaxConfiguration_Test
         Tax_Provider__mdt testTaxProvider = new Tax_Provider__mdt
         (
             Context_Name__c = myName,
-            Context_Locale__c = 'en_GB',
+            Context_Locale__c = 'en_US',
             Taxation_Policy__c = 'Standard',
             Customer_Code__c = 'Cust123',
             Company_Code__c = 'Comp456',
@@ -68,9 +70,13 @@ public class LwrCca_TaxConfiguration_Test
             State__c = 'Test State',
             Zip_Code__c = '12345',
             Country_Code__c = 'USA',
-            Impl_Class__c = 'LwrCca_TaxVertexProvider',
+            Impl_Class__c = 'LwrCca_TaxAvalaraProvider',
             Request_Template__c = '{"request": "template"}'
       	);
+
+        System.debug('testTaxProvider JSON:');
+        System.debug('---------------------');
+        System.debug(JSON.serializePretty(testTaxProvider));
 
         return testTaxProvider;
     }

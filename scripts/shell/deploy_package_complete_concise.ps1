@@ -1,0 +1,1 @@
+sf project deploy start --manifest manifest/package.xml --concise
