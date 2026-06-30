@@ -5,14 +5,14 @@
  *                      isn't a ConnectAPI equivalent (or I couldn't find one).
  * @author            : Tom Zarr
  * @group             : Salesforce Commerce Partner Readiness (2023)
- * @last modified on  : 03-22-2024
+ * @last modified on  : 06-30-2026
  * @last modified by  : Tom Zarr
 **/
 public virtual class BaseRestUtility {
     /** Central toggle for turning on System.Debug calls to ease debugging efforts. Used in the debugCallSignature and debugReturn methods. */
     public static final Boolean IS_DEBUG_ACTIVE = false;
     /** The version of the API in use */
-    public static final String API_VERSION = 'v60.0';
+    public static final String API_VERSION = 'v67.0';
     /**HTTP POST Method */
     public static final String METHOD_POST = 'POST';
     /**HTTP GET Method */

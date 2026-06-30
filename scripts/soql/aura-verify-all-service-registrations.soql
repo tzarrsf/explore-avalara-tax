@@ -1,3 +1,0 @@
-SELECT Id, DeveloperName, ExternalServiceProviderType
-FROM RegisteredExternalService
-WHERE DeveloperName in ('COMPUTE_SHIPPING', 'COMPUTE_TAXES', 'CHECK_INVENTORY', 'COMPUTE_PRICE')

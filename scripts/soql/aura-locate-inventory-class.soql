@@ -1,1 +1,0 @@
-SELECT Id, Name from ApexClass where Name like 'AuraB2B_Inventory%'

@@ -1,3 +1,0 @@
-SELECT Id, DeveloperName, ExternalServiceProviderType
-FROM RegisteredExternalService
-WHERE DeveloperName = 'COMPUTE_PRICE'
