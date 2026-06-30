@@ -37,6 +37,7 @@ public class LwrCca_TaxCartCalculatorExtensionTest
     @isTest
     static void testCalculate()
     {
+        // TODO: There's a non-deterministic issue going on with this method where it fails, then passes on a re-run. I didn't have time to dig into it more.
         CartExtension.Cart cart = arrangeCart();
         String name = 'B2B Store';
         Tax_Provider__mdt taxProvider = getCustomMetadataRecord(name);
