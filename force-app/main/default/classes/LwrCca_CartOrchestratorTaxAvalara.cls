@@ -12,8 +12,8 @@
  *                      6. Calculates taxes for select delivery method operation.
  *
  * @author            : Tom Zarr
- * @group             : Salesforce Commerce Partner Delivery Success (2024)
- * @last modified on  : 06-30-2026
+ * @group             : Salesforce Commerce Partner Enablement Success
+ * @last modified on  : 07-01-2026
  * @last modified by  : Tom Zarr
 **/
 global class LwrCca_CartOrchestratorTaxAvalara extends CartExtension.CartCalculate

@@ -4,8 +4,8 @@
  *                      Developer Essentials" activity "Scripted Import" any any other place where a direct REST API call is needed if there
  *                      isn't a ConnectAPI equivalent (or I couldn't find one).
  * @author            : Tom Zarr
- * @group             : Salesforce Commerce Partner Readiness (2023)
- * @last modified on  : 06-30-2026
+ * @group             : Salesforce Commerce Partner Enablement Success
+ * @last modified on  : 07-01-2026
  * @last modified by  : Tom Zarr
 **/
 public virtual class BaseRestUtility {

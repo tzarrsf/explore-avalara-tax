@@ -5,8 +5,8 @@
  *                      https://sfdc.co/CodeItForwardCharter
  *                      https://sfdc.co/CodeItForwardRepository
  *                      https://sfdc.co/CodeItForwardRegistration
- * @group             : Salesforce Commerce Partner Delivery Success (2024)
- * @last modified on  : 11-20-2024
+ * @group             : Salesforce Commerce Partner Enablement Success
+ * @last modified on  : 07-01-2026
  * @last modified by  : Tom Zarr
 **/
 

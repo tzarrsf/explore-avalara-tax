@@ -4,8 +4,8 @@
  *                      response back if you need to trawl it or alterntively, an untyped deserialization of the response as a map
  *                      which can readily be interrogated via the Apex Object's get method if you know the structure.
  * @author            : Tom Zarr
- * @group             : Salesforce Commerce Partner Delivery Success (2024)
- * @last modified on  : 03-14-2024
+ * @group             : Salesforce Commerce Partner Enablement Success
+ * @last modified on  : 07-01-2026
  * @last modified by  : Tom Zarr
 **/
 public with sharing class RestUtilityForQuery extends BaseRestUtility {
