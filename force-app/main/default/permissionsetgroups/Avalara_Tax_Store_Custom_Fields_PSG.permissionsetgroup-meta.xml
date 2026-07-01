@@ -2,5 +2,6 @@
 <PermissionSetGroup xmlns="http://soap.sforce.com/2006/04/metadata">
     <hasActivationRequired>false</hasActivationRequired>
     <label>Avalara Tax Store Custom Fields PSG</label>
+    <permissionSets>Avalara_Tax_Store_Custom_Fields</permissionSets>
     <status>Updated</status>
 </PermissionSetGroup>
