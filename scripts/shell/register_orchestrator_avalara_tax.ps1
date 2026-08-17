@@ -1,0 +1,1 @@
+sf "commerce:extension:register" --apex-class-name "LwrCca_CartOrchestratorTaxAvalara" --extension-point-name "Commerce_Domain_Cart_Calculate" --registered-extension-name "CartOrchestratorTaxAvalara"
