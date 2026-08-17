@@ -23,6 +23,8 @@ public with sharing class LwrCca_TaxConfiguration
         LwrCca_TaxMetaData taxMetaDataDTO;
         String currentLocale = UserInfo.getLocale();
         String dataKey = contextId + '-' + currentLocale;
+		List<WebStore> webStores;
+		WebStore webStore;
 
         if (taxProviders.containsKey(dataKey))
         {
@@ -30,33 +32,55 @@ public with sharing class LwrCca_TaxConfiguration
         }
         else
         {
-            WebStore webStore;
+            try {
+				if (Test.isRunningTest()) {
+					webStores = [
+						SELECT Name, Tax_Document_Type__c, Tax_Transaction_Type__c
+						FROM WebStore
+						WHERE Name = 'B2B Store'
+						LIMIT 1
+					];
+				} else {
+					webStores = [
+						SELECT Name, Tax_Document_Type__c, Tax_Transaction_Type__c
+						FROM WebStore
+						WHERE Id = :contextId
+						LIMIT 1
+					];
+				}
 
-            if (Test.isRunningTest()) {
-                webStore = [
-                    SELECT Name, Tax_Document_Type__c, Tax_Transaction_Type__c
-                    FROM WebStore
-                    WHERE Name = 'B2B Store'
-                    LIMIT 1
-                ];
-            } else {
-                webStore = [
-                    SELECT Name, Tax_Document_Type__c, Tax_Transaction_Type__c
-                    FROM WebStore
-                    WHERE Id = :contextId
-                    LIMIT 1
-                ];
-            }
+				if (!webStores.isEmpty()) {
+					webStore = webStores[0];
+				} else {
+					// Handle expected "not found" condition here.
+					System.debug(LoggingLevel.WARN, 'No WebStore found for contextId: ' + contextId);
+				}
 
-            if(String.isBlank(transactionType))
-            {
-                transactionType = webStore.Tax_Transaction_Type__c;
-            }
+			} catch (QueryException e) {
+				// Handle an actual SOQL/query failure.
+				System.debug(LoggingLevel.ERROR,
+					'Error querying WebStore: ' + e.getMessage()
+				);
+				throw e;
+			}
+
+			if(String.isBlank(transactionType))
+			{
+				transactionType = webStore.Tax_Transaction_Type__c;
+			}
 
             if(String.isBlank(docType))
             {
                 docType = webStore.Tax_Document_Type__c;
             }
+
+			String whereFilter = 'WHERE ' +
+                    'Context_Name__c = ' + webStore.Name + ' ' +
+                    'AND Context_Locale__c = ' + currentLocale + ' ' + 
+                    'AND Transaction_Type__c = ' + transactionType + ' ' + 
+                    'AND Document_Type__c = ' + docType;
+
+			System.debug('### whereFilter: ' + whereFilter);
 
             taxProviderMDT = [
                 SELECT
@@ -88,11 +112,14 @@ public with sharing class LwrCca_TaxConfiguration
                     Service__r.Service_Mode__c,
                     Service__r.Service_Timeout__c,
                     Service__r.Impl_Class__c,
-                    Service__r.Named_Credentials__c
+                    Service__r.Named_Credentials__c,
+					Context_Name__c,
+					Context_Locale__c	
                 FROM Tax_Provider__mdt
                 WHERE
                     Context_Name__c = :webStore.Name
-                    AND Context_Locale__c = :currentLocale
+                    // TODO: Figure out why this Context_Locale__c filter breaks the tests
+					AND Context_Locale__c = :currentLocale
                     AND Transaction_Type__c = :transactionType
                     AND Document_Type__c = :docType
                 LIMIT 1

@@ -15,9 +15,7 @@ public class LwrCca_TaxAvalaraProviderTest
         insert account;
         WebStore webStore = new WebStore(
             Name = 'B2B Store',
-            //Tax_Document_Type__c ='INVOICE',
             Tax_Document_Type__c ='SalesOrder',
-            //Tax_Transaction_Type__c ='SALE'
             Tax_Transaction_Type__c ='CreateTransaction'
         );
         insert webStore;
