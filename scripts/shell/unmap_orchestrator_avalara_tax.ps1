@@ -1,0 +1,1 @@
+sf commerce:extension:unmap --registered-extension-name "CartOrchestratorTaxAvalara" --store-id "{YourWebStoreId}"

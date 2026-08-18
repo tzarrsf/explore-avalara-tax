@@ -108,6 +108,10 @@
                 <behavior>Edit</behavior>
                 <field>Impl_Class__c</field>
             </layoutItems>
+			<layoutItems>
+				<behavior>Edit</behavior>
+				<field>Service__c</field>
+			</layoutItems>
         </layoutColumns>
         <style>TwoColumnsTopToBottom</style>
     </layoutSections>

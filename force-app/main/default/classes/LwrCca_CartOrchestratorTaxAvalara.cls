@@ -85,6 +85,7 @@ global class LwrCca_CartOrchestratorTaxAvalara extends CartExtension.CartCalcula
         /**
          * This code must run even if using the native shipping feature
          */
+		/*
         if (runShipping) {
             System.debug('### runShipping was true. Calling shipping(calculatorRequest)...');
             shipping(calculatorRequest);
@@ -93,6 +94,7 @@ global class LwrCca_CartOrchestratorTaxAvalara extends CartExtension.CartCalcula
                 return;
             }
         }
+		*/
 
         /**
          * This code must run even if using the native shipping feature
@@ -122,6 +124,12 @@ global class LwrCca_CartOrchestratorTaxAvalara extends CartExtension.CartCalcula
 
         while (iterator.hasNext()) {
             CartExtension.CartValidationOutput cvo = iterator.next();
+
+			System.debug(LoggingLevel.ERROR,
+				'CVO => type=' + cvo.getType()
+				+ ', level=' + cvo.getLevel()
+				+ ', message=' + cvo.getMessage()
+			);
 
             Boolean cvoContainsCalculatorError = cvo.getType() == cartValidationOutputType
                     && cvo.getLevel() == CartExtension.CartValidationOutputLevelEnum.ERROR;

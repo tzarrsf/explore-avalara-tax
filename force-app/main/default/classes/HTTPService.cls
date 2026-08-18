@@ -54,6 +54,10 @@ public virtual class HTTPService {
             );
             }
             res = http.send(req);
+
+			System.debug(LoggingLevel.ERROR, '### AVALARA STATUS = ' + res.getStatusCode());
+			System.debug(LoggingLevel.ERROR, '### AVALARA RESPONSE = ' + res.getBody());
+
           } else {
             res = new HTTPResponse();
             res.setStatusCode(Constants.HTTP_200);

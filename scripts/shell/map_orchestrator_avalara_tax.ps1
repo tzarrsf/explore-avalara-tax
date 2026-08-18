@@ -1,1 +1,1 @@
-sf "commerce:extension:map" --registered-extension-name "CartOrchestratorTaxAvalara" --store-id {YourWebStoreId}
+sf commerce:extension:map --registered-extension-name "CartOrchestratorTaxAvalara" --store-id "{YourWebStoreId}"

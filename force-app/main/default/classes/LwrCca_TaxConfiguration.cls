@@ -33,6 +33,7 @@ public with sharing class LwrCca_TaxConfiguration
         else
         {
             try {
+				/*
 				if (Test.isRunningTest()) {
 					webStores = [
 						SELECT Name, Tax_Document_Type__c, Tax_Transaction_Type__c
@@ -48,6 +49,13 @@ public with sharing class LwrCca_TaxConfiguration
 						LIMIT 1
 					];
 				}
+				*/
+				webStores = [
+					SELECT Id, Tax_Document_Type__c, Tax_Transaction_Type__c
+					FROM WebStore
+					WHERE Id = :contextId
+					LIMIT 1
+				];
 
 				if (!webStores.isEmpty()) {
 					webStore = webStores[0];
@@ -74,15 +82,7 @@ public with sharing class LwrCca_TaxConfiguration
                 docType = webStore.Tax_Document_Type__c;
             }
 
-			String whereFilter = 'WHERE ' +
-                    'Context_Name__c = ' + webStore.Name + ' ' +
-                    'AND Context_Locale__c = ' + currentLocale + ' ' + 
-                    'AND Transaction_Type__c = ' + transactionType + ' ' + 
-                    'AND Document_Type__c = ' + docType;
-
-			System.debug('### whereFilter: ' + whereFilter);
-
-            taxProviderMDT = [
+			taxProviderMDT = [
                 SELECT
                     Id,
                     QualifiedApiName,
@@ -117,12 +117,12 @@ public with sharing class LwrCca_TaxConfiguration
 					Context_Locale__c	
                 FROM Tax_Provider__mdt
                 WHERE
-                    Context_Name__c = :webStore.Name
-                    // TODO: Figure out why this Context_Locale__c filter breaks the tests
-					AND Context_Locale__c = :currentLocale
+                    // Context_Name__c = :webStore.Name
+                    Context_Locale__c = :currentLocale
                     AND Transaction_Type__c = :transactionType
                     AND Document_Type__c = :docType
-                LIMIT 1
+                WITH SYSTEM_MODE
+				LIMIT 1
             ];
 
           if (taxProviderMDT != null)
