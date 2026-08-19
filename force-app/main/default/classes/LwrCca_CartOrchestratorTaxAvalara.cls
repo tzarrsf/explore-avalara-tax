@@ -1,138 +1,145 @@
 /**
- * @description       : This is a sample orchestrator that calls the inventory, pricing, promotions, shipping and tax calculators. This class must
- *                      extend CartExtension.CartCalculate and must be linked to the orchestrator extension point
- *                      (Commerce_Domain_Cart_Calculate). Key functionality:
+ * @description       : Minimal Cart Calculate orchestrator used to isolate and validate
+ *                      the Avalara tax integration in B2B Store.
  *
- *                      1. Calculates pricing and promotions for operations: Add product to cart, remove product from cart, edit cart item quantity.
- *                      2. Calculates promotions for operations: add coupon to cart, remove coupon from cart.
- *                      3. Calculates pricing, promotions, inventory for start checkout operation (without shipping address available).
- *                      4. Calculates pricing, promotions, inventory, shipping, post shipping and taxes for start checkout operation (with shipping
- *                         address available).
- *                      5. Calculates shipping, post shipping and taxes for update shipping address operation.
- *                      6. Calculates taxes for select delivery method operation.
+ *                      Runs native pricing, minimal post-shipping processing,
+ *                      and tax calculation. Pricing/promotions/inventory/shipping
+ *                      calculators are otherwise left out of the test path.
  *
  * @author            : Tom Zarr
  * @group             : Salesforce Commerce Partner Enablement Success
- * @last modified on  : 07-01-2026
+ * @last modified on  : 08-18-2026
  * @last modified by  : Tom Zarr
 **/
 global class LwrCca_CartOrchestratorTaxAvalara extends CartExtension.CartCalculate
 {
-    /**
-     * @description All classes extending CartExtension.CartCalculate must have a default constructor defined
-     */
     global LwrCca_CartOrchestratorTaxAvalara() { }
 
-    /**
-     * @description Constructor used by unit tests only. See <<CartCalculateSampleUnitTest>>.
-     * @param apexExecutor Executor which executes various calculators. Can be used to stub calculation results or delegate calculations to actual Calculator. See <<CartCalculateExecutorMock>>.
-     */
-    global LwrCca_CartOrchestratorTaxAvalara(final CartExtension.CartCalculateExecutorMock apexExecutor)
+    global LwrCca_CartOrchestratorTaxAvalara(
+        final CartExtension.CartCalculateExecutorMock apexExecutor
+    )
     {
-        // Must call super constructor in order for provided Executor to be used for calculations
         super(apexExecutor);
     }
 
-    // Each orchestrator must override this calculate method.
+	/**
+	 * This code is a crude example meant for isolation testing with Avalara. It's moste definitely not following best practices.
+	 */
     global virtual override void calculate(CartExtension.CartCalculateOrchestratorRequest request)
     {
-        System.debug('### LwrCca_CartOrchestratorTaxAvalara.calculate(CartExtension.CartCalculateOrchestratorRequest request)');
+        System.debug(
+            LoggingLevel.INFO,
+            '### LwrCca_CartOrchestratorTaxAvalara.calculate()'
+        );
+
         CartExtension.Cart cart = request.getCart();
 
-        // Use BuyerActions to decide which calculators to invoke
+        CartExtension.CartCalculateCalculatorRequest calculatorRequest =
+            new CartExtension.CartCalculateCalculatorRequest(
+                cart,
+                request.getOptionalBuyerActionDetails()
+            );
+
         CartExtension.BuyerActions buyerActions = request.getBuyerActions();
-        boolean runPricing = buyerActions.isCheckoutStarted() || buyerActions.isCartItemChanged();
-        boolean runPromotions = buyerActions.isCheckoutStarted() || buyerActions.isCouponChanged() || buyerActions.isCartItemChanged();
-        boolean runInventory = buyerActions.isCheckoutStarted();
-        boolean runShipping = buyerActions.isDeliveryGroupChanged();
-        boolean runPostShipping = buyerActions.isDeliveryGroupChanged() || buyerActions.isDeliveryMethodSelected();
-        boolean runTaxes = buyerActions.isCartItemChanged() || buyerActions.isCheckoutStarted() || buyerActions.isDeliveryGroupChanged() || buyerActions.isDeliveryMethodSelected();
-        //boolean runTaxes = buyerActions.isDeliveryGroupChanged() || buyerActions.isDeliveryMethodSelected();
 
-        // OptionalBuyerActionDetails can be used to optimize the various calculators that are invoked
-        CartExtension.CartCalculateCalculatorRequest calculatorRequest = new CartExtension.CartCalculateCalculatorRequest(cart, request.getOptionalBuyerActionDetails());
-
-        if (runPricing) {
-            System.debug('### runPricing was true. Calling prices(calculatorRequest)...');
-            prices(calculatorRequest);
-
-            if (hasErrorLevelCartValidationOutput(cart.getCartValidationOutputs(), CartExtension.CartValidationOutputTypeEnum.PRICING)) {
-                return;
-            }
-        }
-
-        /**
-         * Work in Progress - not used at the moment
+        /*
+         * Native pricing.
          */
-        if (runPromotions) {
-            System.debug('### runPromotions was true. Calling promotions(calculatorRequest)...');
-            promotions(calculatorRequest);
+        System.debug(
+            LoggingLevel.INFO,
+            '### Calling prices()...'
+        );
 
-            if (hasErrorLevelCartValidationOutput(cart.getCartValidationOutputs(), CartExtension.CartValidationOutputTypeEnum.PROMOTIONS)) {
-                return;
-            }
+        prices(calculatorRequest);
+
+        if (hasErrorLevelCartValidationOutput(
+                cart.getCartValidationOutputs(),
+                CartExtension.CartValidationOutputTypeEnum.PRICING
+            )) {
+            System.debug(
+                LoggingLevel.ERROR,
+                '### Pricing produced an ERROR CVO. Stopping.'
+            );
+            return;
         }
 
-        if (runInventory) {
-            System.debug('### runInventory was true. Calling inventory(calculatorRequest)...');
-            inventory(calculatorRequest);
-
-            if (hasErrorLevelCartValidationOutput(cart.getCartValidationOutputs(), CartExtension.CartValidationOutputTypeEnum.INVENTORY)) {
-                return;
-            }
-        }
-
-        /**
-         * This code must run even if using the native shipping feature
+        /*
+         * Minimal post-shipping support for checkout.
          */
-		/*
-        if (runShipping) {
-            System.debug('### runShipping was true. Calling shipping(calculatorRequest)...');
-            shipping(calculatorRequest);
+        Boolean runPostShipping =
+            buyerActions.isCheckoutStarted() ||
+            buyerActions.isDeliveryGroupChanged() ||
+            buyerActions.isDeliveryMethodSelected();
 
-            if (hasErrorLevelCartValidationOutput(cart.getCartValidationOutputs(), CartExtension.CartValidationOutputTypeEnum.SHIPPING)) {
-                return;
-            }
-        }
-		*/
-
-        /**
-         * This code must run even if using the native shipping feature
-         */
         if (runPostShipping) {
-            System.debug('### runPostShipping was true. Calling postShipping(calculatorRequest)...');
+            System.debug(
+                LoggingLevel.INFO,
+                '### Calling postShipping()...'
+            );
+
             postShipping(calculatorRequest);
 
-            if (hasErrorLevelCartValidationOutput(cart.getCartValidationOutputs(), CartExtension.CartValidationOutputTypeEnum.SYSTEM_ERROR)) {
+            if (hasErrorLevelCartValidationOutput(
+                    cart.getCartValidationOutputs(),
+                    CartExtension.CartValidationOutputTypeEnum.SYSTEM_ERROR
+                )) {
+                System.debug(
+                    LoggingLevel.ERROR,
+                    '### postShipping produced a SYSTEM_ERROR CVO. Stopping.'
+                );
                 return;
             }
         }
 
-        /**
-         * Call taxes
+        /*
+         * Avalara isolation mode.
          */
-        if (runTaxes) {
-            System.debug('### runTaxes was true. Calling taxes(calculatorRequest)...');
-            taxes(calculatorRequest);
-        }
+        System.debug(
+            LoggingLevel.INFO,
+            '### Calling taxes()...'
+        );
+
+        taxes(calculatorRequest);
+
+        /*
+         * Dump any tax-related validation outputs created by the tax
+         * calculator. This is diagnostic; the helper does not catch
+         * exceptions thrown inside the tax extension itself.
+         */
+        Boolean taxError = hasErrorLevelCartValidationOutput(
+            cart.getCartValidationOutputs(),
+            CartExtension.CartValidationOutputTypeEnum.TAXES
+        );
+
+        System.debug(
+            taxError
+                ? LoggingLevel.ERROR
+                : LoggingLevel.INFO,
+            '### Tax CVO error=' + taxError
+        );
     }
 
-    // This function evaluates whether there are errors in the CVO of a specific calculator type.
-    private Boolean hasErrorLevelCartValidationOutput(CartExtension.CartValidationOutputList cartValidationOutputs,
-                                                      CartExtension.CartValidationOutputTypeEnum cartValidationOutputType) {
-        Iterator<CartExtension.CartValidationOutput> iterator = cartValidationOutputs.iterator();
+    private Boolean hasErrorLevelCartValidationOutput(
+        CartExtension.CartValidationOutputList cartValidationOutputs,
+        CartExtension.CartValidationOutputTypeEnum cartValidationOutputType
+    ) {
+        Iterator<CartExtension.CartValidationOutput> iterator =
+            cartValidationOutputs.iterator();
 
         while (iterator.hasNext()) {
             CartExtension.CartValidationOutput cvo = iterator.next();
 
-			System.debug(LoggingLevel.ERROR,
-				'CVO => type=' + cvo.getType()
-				+ ', level=' + cvo.getLevel()
-				+ ', message=' + cvo.getMessage()
-			);
+            System.debug(
+                LoggingLevel.ERROR,
+                'CVO => type=' + cvo.getType() +
+                ', level=' + cvo.getLevel() +
+                ', message=' + cvo.getMessage()
+            );
 
-            Boolean cvoContainsCalculatorError = cvo.getType() == cartValidationOutputType
-                    && cvo.getLevel() == CartExtension.CartValidationOutputLevelEnum.ERROR;
+            Boolean cvoContainsCalculatorError =
+                cvo.getType() == cartValidationOutputType &&
+                cvo.getLevel() ==
+                    CartExtension.CartValidationOutputLevelEnum.ERROR;
 
             if (cvoContainsCalculatorError) {
                 return true;

@@ -1,0 +1,9 @@
+SELECT
+    Id,
+    Sku,
+    Product2Id,
+    Product2.Id,
+    Product2.Name,
+    Product2.Tax_Class_Id__c
+FROM CartItem
+WHERE Id = '0a9hm00000018htAAA'

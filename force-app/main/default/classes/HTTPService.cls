@@ -53,6 +53,17 @@ public virtual class HTTPService {
               calloutRequestDetails.get(Constants.SERVICE_REQUEST_BODY)
             );
             }
+
+			System.debug(
+				LoggingLevel.ERROR,
+				'### REAL HTTP REQUEST BODY >>> ' + req.getBody()
+			);
+
+			System.debug(
+				LoggingLevel.ERROR,
+				'### REAL HTTP ENDPOINT >>> ' + req.getEndpoint()
+			);
+
             res = http.send(req);
 
 			System.debug(LoggingLevel.ERROR, '### AVALARA STATUS = ' + res.getStatusCode());

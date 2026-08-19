@@ -49,7 +49,12 @@ public abstract class LwrCca_TaxAbstractProvider {
 
     public virtual LwrCca_TaxProviderResponse calculateTax(LwrCca_TaxProviderRequest taxRequest)
     {
-        LwrCca_TaxProviderResponse taxes;
+        System.debug(
+			LoggingLevel.ERROR,
+			'### CALCULATETAX VERSION TEST 20260819'
+		);
+		
+		LwrCca_TaxProviderResponse taxes;
         Map<String, String> responseMap;
         Boolean calloutSuccess = true;
 
@@ -59,6 +64,39 @@ public abstract class LwrCca_TaxAbstractProvider {
             callOutRequest.putAll(prepareNamedCredentials(taxRequest));
             callOutRequest.putAll(setServiceDetails(taxRequest));
             prepareCreateTransaction(taxRequest, callOutRequest);
+
+			System.debug(
+				LoggingLevel.ERROR,
+				'ZZZZZZ OUTBOUND AVALARA REQUEST ZZZZZZ => ' +
+				JSON.serialize(callOutRequest)
+			);
+
+			System.debug(LoggingLevel.ERROR, '### CALCULATETAX AFTER PREPARECREATE');
+
+			System.debug(
+				LoggingLevel.ERROR,
+				'### CALLOUT REQUEST KEYS = ' + callOutRequest.keySet()
+			);
+
+			System.debug(
+				LoggingLevel.ERROR,
+				'### CALLOUT REQUEST BODY = ' + callOutRequest
+			);
+
+			System.debug(
+				LoggingLevel.ERROR,
+				'### BEFORE AVALARA CALLOUT REQUEST = '
+				+ JSON.serializePretty(callOutRequest)
+			);
+
+			System.debug(
+				LoggingLevel.ERROR,
+				'### BEFORE AVALARA CALLOUT TAX ITEMS = '
+				+ JSON.serializePretty(taxRequest.taxableCartItems)
+			);
+
+			System.debug(LoggingLevel.ERROR,
+    			'### AVALARA REQUEST BODY ### ' + taxRequest);
 
             responseMap = ServiceFactory.getService(taxRequest.taxMetaData.serviceImplClass)
                 .makeExternalCallout(callOutRequest, setRequestHeaders(taxRequest));
@@ -93,7 +131,6 @@ public abstract class LwrCca_TaxAbstractProvider {
 
     public void commitTransaction(LwrCca_TaxProviderRequest taxRequest)
     {
-      System.debug('========================= Inside LwrCca_AbstractTaxProvider#calculateTax starts');
 
       LwrCca_TaxProviderResponse taxes;
       Map<String, String> responseMap;
@@ -105,6 +142,16 @@ public abstract class LwrCca_TaxAbstractProvider {
         callOutRequest.putAll(prepareNamedCredentials(taxRequest));
         callOutRequest.putAll(setServiceDetails(taxRequest));
         prepareCommitTransaction(taxRequest, callOutRequest);
+
+		System.debug(
+			LoggingLevel.ERROR,
+			'### OUTBOUND CALLOUT MAP = ' + JSON.serializePretty(callOutRequest)
+		);
+
+		System.debug(
+			LoggingLevel.ERROR,
+			'### TAX REQUEST ITEMS = ' + JSON.serializePretty(taxRequest.taxableCartItems)
+		);
 
         responseMap = ServiceFactory.getService(taxRequest.taxMetaData.serviceImplClass)
           .makeExternalCallout(callOutRequest, setRequestHeaders(taxRequest));

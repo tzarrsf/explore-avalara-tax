@@ -82,7 +82,7 @@ public with sharing class LwrCca_TaxConfiguration
                 docType = webStore.Tax_Document_Type__c;
             }
 
-			taxProviderMDT = [
+			List<Tax_Provider__mdt> taxProviderMDTs = [
                 SELECT
                     Id,
                     QualifiedApiName,
@@ -125,39 +125,45 @@ public with sharing class LwrCca_TaxConfiguration
 				LIMIT 1
             ];
 
-          if (taxProviderMDT != null)
-          {
-                taxMetaDataDTO = new LwrCca_TaxMetaData();
-                taxMetaDataDTO.requestJSON = taxProviderMDT.Request_Template__c;
-                taxMetaDataDTO.providerImplClass = taxProviderMDT.Impl_Class__c;
-                taxMetaDataDTO.companyCode = taxProviderMDT.Company_Code__c;
-                taxMetaDataDTO.customerCode = taxProviderMDT.Customer_Code__c;
-                taxMetaDataDTO.shipFromLine1 = taxProviderMDT.Address_Line1__c;
-                taxMetaDataDTO.shipFromLine2 = taxProviderMDT.Address_Line2__c;
-                taxMetaDataDTO.shipFromCity = taxProviderMDT.City__c;
-                taxMetaDataDTO.shipFromState = taxProviderMDT.State__c;
-                taxMetaDataDTO.shipFromCountry = taxProviderMDT.Country_Code__c;
-                taxMetaDataDTO.shipFromZipCode = taxProviderMDT.Zip_Code__c;
-                taxMetaDataDTO.defaultShippingTaxCode = taxProviderMDT.Default_Shipping_Tax_Code__c;
-                taxMetaDataDTO.taxationPolicy = taxProviderMDT.Taxation_Policy__c;
-                taxMetaDataDTO.shippingItemsTaxable = taxProviderMDT.Shipping_Items_Taxable__c;
-                taxMetaDataDTO.defaultProductTaxCode = taxProviderMDT.Default_Product_Tax_Code__c;
-                taxMetaDataDTO.useProductTaxCodes = taxProviderMDT.Consider_product_tax_codes__c;
-                taxMetaDataDTO.productTaxExemption = taxProviderMDT.Product_Tax_Exemption__c;
-                taxMetaDataDTO.customerTaxExemption = taxProviderMDT.Customer_Tax_Exemption__c;
-                taxMetaDataDTO.transactionType = taxProviderMDT.Transaction_Type__c;
-                taxMetaDataDTO.documentType = taxProviderMDT.Document_Type__c;
-                taxMetaDataDTO.isCommit = taxProviderMDT.Commit__c;
-                taxMetaDataDTO.endPoint = taxProviderMDT.Service__r.End_Point__c;
-                taxMetaDataDTO.httpMethod = taxProviderMDT.Service__r.HTTP_Method__c;
-                taxMetaDataDTO.mockedResponse = taxProviderMDT.Service__r.Mocked_Response__c;
-                taxMetaDataDTO.serviceMode = taxProviderMDT.Service__r.Service_Mode__c;
-                taxMetaDataDTO.serviceTimeout = taxProviderMDT.Service__r.Service_Timeout__c;
-                taxMetaDataDTO.serviceImplClass = taxProviderMDT.Service__r.Impl_Class__c;
-                taxMetaDataDTO.namedCredentials = taxProviderMDT.Service__r.Named_Credentials__c;
-                taxProviders.put(dataKey, taxMetaDataDTO);
-            }
-        }
+			if (taxProviderMDTs.isEmpty()) {
+				return null;
+			}
+
+			taxProviderMDT = taxProviderMDTs[0];
+
+			if (taxProviderMDT != null)
+			{
+					taxMetaDataDTO = new LwrCca_TaxMetaData();
+					taxMetaDataDTO.requestJSON = taxProviderMDT.Request_Template__c;
+					taxMetaDataDTO.providerImplClass = taxProviderMDT.Impl_Class__c;
+					taxMetaDataDTO.companyCode = taxProviderMDT.Company_Code__c;
+					taxMetaDataDTO.customerCode = taxProviderMDT.Customer_Code__c;
+					taxMetaDataDTO.shipFromLine1 = taxProviderMDT.Address_Line1__c;
+					taxMetaDataDTO.shipFromLine2 = taxProviderMDT.Address_Line2__c;
+					taxMetaDataDTO.shipFromCity = taxProviderMDT.City__c;
+					taxMetaDataDTO.shipFromState = taxProviderMDT.State__c;
+					taxMetaDataDTO.shipFromCountry = taxProviderMDT.Country_Code__c;
+					taxMetaDataDTO.shipFromZipCode = taxProviderMDT.Zip_Code__c;
+					taxMetaDataDTO.defaultShippingTaxCode = taxProviderMDT.Default_Shipping_Tax_Code__c;
+					taxMetaDataDTO.taxationPolicy = taxProviderMDT.Taxation_Policy__c;
+					taxMetaDataDTO.shippingItemsTaxable = taxProviderMDT.Shipping_Items_Taxable__c;
+					taxMetaDataDTO.defaultProductTaxCode = taxProviderMDT.Default_Product_Tax_Code__c;
+					taxMetaDataDTO.useProductTaxCodes = taxProviderMDT.Consider_product_tax_codes__c;
+					taxMetaDataDTO.productTaxExemption = taxProviderMDT.Product_Tax_Exemption__c;
+					taxMetaDataDTO.customerTaxExemption = taxProviderMDT.Customer_Tax_Exemption__c;
+					taxMetaDataDTO.transactionType = taxProviderMDT.Transaction_Type__c;
+					taxMetaDataDTO.documentType = taxProviderMDT.Document_Type__c;
+					taxMetaDataDTO.isCommit = taxProviderMDT.Commit__c;
+					taxMetaDataDTO.endPoint = taxProviderMDT.Service__r.End_Point__c;
+					taxMetaDataDTO.httpMethod = taxProviderMDT.Service__r.HTTP_Method__c;
+					taxMetaDataDTO.mockedResponse = taxProviderMDT.Service__r.Mocked_Response__c;
+					taxMetaDataDTO.serviceMode = taxProviderMDT.Service__r.Service_Mode__c;
+					taxMetaDataDTO.serviceTimeout = taxProviderMDT.Service__r.Service_Timeout__c;
+					taxMetaDataDTO.serviceImplClass = taxProviderMDT.Service__r.Impl_Class__c;
+					taxMetaDataDTO.namedCredentials = taxProviderMDT.Service__r.Named_Credentials__c;
+					taxProviders.put(dataKey, taxMetaDataDTO);
+				}
+        	}
 
         return taxMetaDataDTO;
     }

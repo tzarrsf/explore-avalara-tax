@@ -59,14 +59,42 @@ public without sharing class LwrCca_TaxAvalaraProvider extends LwrCca_TaxAbstrac
 
         avalaraRequest.date_Z = System.now() + '';
         //taxRequest.taxableCartItems = null;
-        if (taxRequest.taxableCartItems != null &&  taxRequest.taxableCartItems.keySet().size() > 0 )
+        
+		System.debug(
+			LoggingLevel.ERROR,
+			'### PREPARE CREATE BRANCH'
+			+ ' | taxableCartItems='
+			+ (taxRequest.taxableCartItems == null
+				? 'NULL'
+				: String.valueOf(taxRequest.taxableCartItems))
+			+ ' | size='
+			+ (taxRequest.taxableCartItems == null
+				? 'NULL'
+				: String.valueOf(taxRequest.taxableCartItems.size()))
+		);
+		
+		System.debug(
+			LoggingLevel.ERROR,
+			'### PREVIOUS AVALARA REQUEST OBJECT='
+			+ JSON.serialize(avalaraRequest)
+		);
+
+		if (taxRequest.taxableCartItems != null &&  taxRequest.taxableCartItems.keySet().size() > 0 )
         {
-            avalaraRequest.lines = prepareRequestFromExistingData(taxRequest, hasMultipleShipments);
+        	System.debug(LoggingLevel.ERROR, '### USING prepareRequestFromExistingData');
+			avalaraRequest.lines = prepareRequestFromExistingData(taxRequest, hasMultipleShipments);
         }
         else
         {
-            avalaraRequest.lines = prepareRequestFromDB(taxRequest, hasMultipleShipments);
+            System.debug(LoggingLevel.ERROR, '### USING prepareRequestFromDB');
+			avalaraRequest.lines = prepareRequestFromDB(taxRequest, hasMultipleShipments);
         }
+
+		System.debug(
+			LoggingLevel.ERROR,
+			'### FINAL AVALARA REQUEST OBJECT='
+			+ JSON.serialize(avalaraRequest)
+		);
 
         if (!hasMultipleShipments)
         {
@@ -82,8 +110,37 @@ public without sharing class LwrCca_TaxAvalaraProvider extends LwrCca_TaxAbstrac
             avalaraRequest.addresses = addresses;
         }
 
+		System.debug(
+			LoggingLevel.ERROR,
+			'### AVALARA OUTBOUND LINE'
+			+ ' | number=' + (avalaraRequest.lines != null && avalaraRequest.lines.size() > 0
+				? String.valueOf(avalaraRequest.lines[0].number_Z)
+				: 'NONE')
+			+ ' | itemCode=' + (avalaraRequest.lines != null && avalaraRequest.lines.size() > 0
+				? avalaraRequest.lines[0].itemCode
+				: 'NONE')
+			+ ' | taxCode=' + (avalaraRequest.lines != null && avalaraRequest.lines.size() > 0
+				? avalaraRequest.lines[0].taxCode
+				: 'NONE')
+			+ ' | amount=' + (avalaraRequest.lines != null && avalaraRequest.lines.size() > 0
+				? String.valueOf(avalaraRequest.lines[0].amount)
+				: 'NONE')
+		);
+
         String avalaraRequestBody = JSON.serialize(avalaraRequest, true);
+
+		System.debug(
+			LoggingLevel.ERROR,
+			'### ACTUAL AVALARA REQUEST >>> ' +
+			JSON.serialize(avalaraRequest)
+		);
+
         avalaraRequestBody = avalaraRequestBody.replaceAll('_Z', '');
+		System.debug(
+			LoggingLevel.ERROR,
+			'### FINAL AVALARA REQUEST BODY='
+			+ avalaraRequestBody
+		);
         callOutRequest.put(Constants.SERVICE_REQUEST_BODY, avalaraRequestBody);
         System.debug('====== avalaraRequest : '+avalaraRequestBody);
     }
@@ -116,9 +173,53 @@ public without sharing class LwrCca_TaxAvalaraProvider extends LwrCca_TaxAbstrac
                     if (line.taxableAmount > 0) {
                         liTaxDetails.rate = liTaxDetails.tax / line.taxableAmount;
                     }
-                        if(!Test.isRunningTest()){
-                            taxableCartItems.get(lineNumber).lineItemTexas.add(liTaxDetails);
-                        }          
+
+					if (!Test.isRunningTest()) {
+						LwrCca_TaxableCartItem cartItem;
+						String matchedCartItemKey;
+
+						// First try Avalara lineNumber as a direct key.
+						if (taxableCartItems.containsKey(lineNumber)) {
+							matchedCartItemKey = lineNumber;
+							cartItem = taxableCartItems.get(lineNumber);
+						}
+
+						// Avalara lineNumber is not our Salesforce CartItem Id.
+						// Fall back to itemCode/SKU, BUT preserve the original map key.
+						if (cartItem == null) {
+							for (String cartItemKey : taxableCartItems.keySet()) {
+								LwrCca_TaxableCartItem candidate =
+									taxableCartItems.get(cartItemKey);
+
+								if (candidate != null && candidate.sku == line.itemCode) {
+									matchedCartItemKey = cartItemKey;
+									cartItem = candidate;
+									break;
+								}
+							}
+						}
+
+						if (cartItem != null) {
+							 cartItem.lineItemTexas.add(liTaxDetails);
+
+							System.debug(
+								LoggingLevel.ERROR,
+								'### AVALARA MAP SUCCESS'
+								+ ' | lineNumber=' + lineNumber
+								+ ' | itemCode=' + line.itemCode
+								+ ' | Salesforce key=' + matchedCartItemKey
+								+ ' | tcItem.id=' + cartItem.id
+							);
+						} else {
+							System.debug(
+								LoggingLevel.ERROR,
+								'### AVALARA MAP FAILED'
+								+ ' | lineNumber=' + lineNumber
+								+ ' | itemCode=' + line.itemCode
+								+ ' | available keys=' + taxableCartItems.keySet()
+							);
+						}
+					}
                 }
                 tpResponse.taxableCartItems = taxableCartItems;
             }
@@ -134,17 +235,64 @@ public without sharing class LwrCca_TaxAvalaraProvider extends LwrCca_TaxAbstrac
         for (String id : taxRequest.taxableCartItems.keySet())
         {
             LwrCca_TaxableCartItem cartItem = taxRequest.taxableCartItems.get(id);
+
+			if (cartItem.id == null) {
+				cartItem.id = id;
+			}
+
+			System.debug(
+				LoggingLevel.ERROR,
+				'### PREPARE AVALARA LINE'
+				+ ' | id=' + cartItem.id
+				+ ' | sku=' + cartItem.sku
+				+ ' | amount=' + cartItem.amount
+				+ ' | taxClassId=[' + cartItem.taxClassId + ']'
+				+ ' | taxClassIdBlank=' + String.isBlank(cartItem.taxClassId)
+			);
+
+			System.debug(
+				LoggingLevel.ERROR,
+				'### CART ITEM BEFORE PREPARE LINE'
+				+ ' | id=' + cartItem.id
+				+ ' | sku=' + cartItem.sku
+				+ ' | amount=' + cartItem.amount
+				+ ' | taxClassId=' + cartItem.taxClassId
+				+ ' | lineItemType=' + cartItem.lineItemType
+			);
+
             LwrCca_TaxAvalaraRequest.Lines line = prepareLine(
-                id,
+                cartItem.id,
                 cartItem.sku,
                 cartItem.amount,
                 cartItem.lineItemType,
                 cartItem.taxClassId,
-                cartItem.productExemptionCode,
-                cartItem.entityUseCode,
-                taxRequest,
+				cartItem.productExemptionCode,
+				cartItem.entityUseCode,
+				taxRequest,
                 false
             );
+
+			System.debug(
+				LoggingLevel.ERROR,
+				'### ACTUAL AVALARA LINE OBJECT'
+				+ ' | number_Z=' + line.number_Z
+				+ ' | itemCode=' + line.itemCode
+				+ ' | amount=' + line.amount
+				+ ' | taxCode=' + line.taxCode
+				+ ' | exemptionCode=' + line.exemptionCode
+				+ ' | entityUseCode=' + line.entityUseCode
+				+ ' | taxIncluded=' + line.taxIncluded
+			);
+
+			System.debug(
+				LoggingLevel.ERROR,
+				'### AVALARA OUTBOUND LINE'
+				+ ' | id=' + cartItem.id
+				+ ' | sku=' + cartItem.sku
+				+ ' | taxClassId=' + cartItem.taxClassId
+				+ ' | line.taxCode=' + line.taxCode
+				+ ' | line.amount=' + line.amount
+			);
 
             if (hasMultipleShipments)
             {
@@ -197,8 +345,9 @@ public without sharing class LwrCca_TaxAvalaraProvider extends LwrCca_TaxAbstrac
             }
 
             for (CartItem cartItem : Database.query(query))
-            {
-                LwrCca_TaxAvalaraRequest.Lines line = prepareLine(
+            {	
+				
+				LwrCca_TaxAvalaraRequest.Lines line = prepareLine(
                     cartItem.Id,
                     cartItem.SKU !=null ? cartItem.SKU : cartItem.Product2.StockKeepingUnit,
                     cartItem.TotalLineAmount,
@@ -209,6 +358,18 @@ public without sharing class LwrCca_TaxAvalaraProvider extends LwrCca_TaxAbstrac
                     taxRequest,
                     true
                 );
+
+				System.debug(
+					LoggingLevel.ERROR,
+					'### ACTUAL AVALARA LINE OBJECT'
+					+ ' | number_Z=' + line.number_Z
+					+ ' | itemCode=' + line.itemCode
+					+ ' | amount=' + line.amount
+					+ ' | taxCode=' + line.taxCode
+					+ ' | exemptionCode=' + line.exemptionCode
+					+ ' | entityUseCode=' + line.entityUseCode
+					+ ' | taxIncluded=' + line.taxIncluded
+				);
 
                 if (hasMultipleShipments)
                 {
@@ -242,7 +403,16 @@ public without sharing class LwrCca_TaxAvalaraProvider extends LwrCca_TaxAbstrac
         Boolean setInRequestToo
     )
     {
-        LwrCca_TaxAvalaraRequest.Lines line = new LwrCca_TaxAvalaraRequest.Lines();
+        System.debug(
+			LoggingLevel.ERROR,
+			'### PREPARELINE DEFINITELY EXECUTED'
+			+ ' | id=' + id
+			+ ' | sku=' + sku
+			+ ' | taxClassId=' + taxClassId
+			+ ' | setInRequestToo=' + setInRequestToo
+		);
+		
+		LwrCca_TaxAvalaraRequest.Lines line = new LwrCca_TaxAvalaraRequest.Lines();
         line.number_Z = id;
         line.itemCode = sku;
         line.amount = taxableAmount;
@@ -252,9 +422,25 @@ public without sharing class LwrCca_TaxAvalaraProvider extends LwrCca_TaxAbstrac
             line.taxIncluded = taxRequest.taxMetaData.taxationPolicy.equalsIgnoreCase( 'net' ) ? false : true;
         }
 
+		System.debug(
+			LoggingLevel.ERROR,
+			'ZZZZZZ TAXCODE BEFORE AVALARA ZZZZZZ'
+			+ ' | id=' + id
+			+ ' | sku=' + sku
+			+ ' | taxClassId=' + taxClassId
+		);
+
         line.taxCode = taxClassId;
         line.exemptionCode = exemptionCode;
         line.entityUseCode = entityUseCode;
+
+		 System.debug(
+			LoggingLevel.ERROR,
+			'### PREPARELINE RESULT'
+			+ ' | number=' + line.number_Z
+			+ ' | itemCode=' + line.itemCode
+			+ ' | taxCode=' + line.taxCode
+		);
 
         if (setInRequestToo)
         {

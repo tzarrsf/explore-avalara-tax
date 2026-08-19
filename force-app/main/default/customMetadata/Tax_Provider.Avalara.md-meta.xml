@@ -48,7 +48,7 @@
     </values>
     <values>
         <field>Default_Product_Tax_Code__c</field>
-        <value xsi:type="xsd:string">P0000000</value>
+        <value xsi:type="xsd:string"></value>
     </values>
     <values>
         <field>Default_Shipping_Tax_Code__c</field>
@@ -64,7 +64,7 @@
     </values>
     <values>
         <field>Product_Tax_Exemption__c</field>
-        <value xsi:type="xsd:boolean">true</value>
+        <value xsi:type="xsd:boolean">false</value>
     </values>
     <values>
         <field>Request_Template__c</field>
